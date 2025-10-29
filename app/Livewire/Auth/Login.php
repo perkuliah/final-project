@@ -17,7 +17,7 @@ class Login extends Component
 
     protected $rules = [
         'email' => 'required|email',
-        'password' => 'required|min:6',
+        'password' => 'required|min:4',
     ];
 
     public function login()

@@ -17,8 +17,12 @@
     <!-- Font Awesome Icons -->
     {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
     <link href="{{ asset('assetss/css/nucleo-svg.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assetss/css/soft-ui-dashboard.css') }}" rel="stylesheet" />
+    <style>
+
+    </style>
     @livewireStyles
 
 </head>
@@ -38,7 +42,6 @@
             </header>
             
         <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        
         {{ $slot }} 
         </main>
 
@@ -59,6 +62,7 @@
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
     </script>
+    
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->

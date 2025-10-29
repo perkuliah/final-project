@@ -21,7 +21,7 @@
                             <div class="text-center">
                                 <div class="mb-4 text-center mt-7">
                                 @if($foto)
-                                    <img src="{{ asset('storage/users/' . $foto) }}" class="img-profile" alt="Avatar">
+                                    <img src="{{ asset('storage/' . $foto) }}" class="img-profile" alt="Avatar">
                                 @else
                                     <img src="{{ asset('assetss/img/no-image.jpg') }}" class="img-profile" alt="Avatar">
                                         @endif
