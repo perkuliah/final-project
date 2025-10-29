@@ -32,10 +32,10 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app/private'),
-            'serve' => true,
+            'root' => storage_path('app'),
+            // 'serve' => true,
             'throw' => false,
-            'report' => false,
+            // 'report' => false,
         ],
 
         'public' => [
@@ -44,8 +44,28 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
-            'report' => false,
+            // 'report' => false,
         ],
+
+        
+        // 'local' => [
+        //     'driver' => 'local',
+        //     'root' => storage_path('app/private'),
+        //     'serve' => true,
+        //     'throw' => false,
+        //     'report' => false,
+        // ],
+
+        // 'public' => [
+        //     'driver' => 'local',
+        //     'root' => storage_path('app/public'),
+        //     'url' => env('APP_URL').'/storage',
+        //     'visibility' => 'public',
+        //     'throw' => false,
+        //     'report' => false,
+        // ],
+
+
 
         's3' => [
             'driver' => 's3',

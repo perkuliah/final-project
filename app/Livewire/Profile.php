@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
-    #[Layout('components.layouts.app')]
+#[Layout('components.layouts.app')]
 class Profile extends Component
 {
     use WithFileUploads;

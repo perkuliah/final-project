@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assetss/img/apple-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('assetss/img/favicon.png') }}">
     <title>
         @yield('title', 'Dashboard')
     </title>
@@ -15,7 +15,7 @@
     <link href="{{ asset('assetss/css/nucleo-icons.css') }}" rel="stylesheet" />
     <link href="{{ asset('assetss/css/nucleo-svg.css') }}" rel="stylesheet" />
     <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
     <link href="{{ asset('assetss/css/nucleo-svg.css') }}" rel="stylesheet" />
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assetss/css/soft-ui-dashboard.css') }}" rel="stylesheet" />
@@ -37,14 +37,12 @@
                 </a>
             </header>
             
-            <main>
-                @yield('content')
-                {{ $slot }}
-            </main>
+        <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+        
+        {{ $slot }} 
+        </main>
 
             
-
-
         </div>
     </div>
 
@@ -65,9 +63,8 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assetss/js/soft-ui-dashboard.js') }}"></script>
-    <script src="{{ asset('brutalist/script.js') }}"></script>
-    <script src="{{ asset('brutalist/form-utils.js') }}"></script>
-    
+    {{-- <script src="{{ asset('brutalist/script.js') }}"></script>
+    <script src="{{ asset('brutalist/form-utils.js') }}"></script> --}}
     @livewireScripts
 </body>
 

@@ -8,6 +8,7 @@
         <title>@yield('title', 'Login')</title>
     </head>
     <body>
+        
         {{ $slot }}
 
         <script src="{{ asset('brutalist/script.js') }}"></script>

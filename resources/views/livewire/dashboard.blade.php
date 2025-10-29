@@ -94,7 +94,7 @@
   </main>
 
   <!--   Core JS Files   -->
-  <script src="{{ asset('assetss/js/plugins/chartjs.min.js') }}"></script>
+  {{-- <script src="{{ asset('assetss/js/plugins/chartjs.min.js') }}"></script>
   <script src="{{ asset('assetss/js/plugins/Chart.extension.js') }}"></script>
   <script>
     var ctx = document.getElementById("chart-bars").getContext("2d");
@@ -250,4 +250,4 @@
         },
       },
     });
-  </script>
+  </script> --}}

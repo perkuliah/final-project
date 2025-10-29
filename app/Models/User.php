@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Livewire\Laporan;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -22,8 +20,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'whatsapp',
+        'foto',
+        'username',
+        'email_verified_at',
+        'alamat',
+        'role',
     ];
-    
 
     /**
      * The attributes that should be hidden for serialization.
@@ -48,4 +51,5 @@ class User extends Authenticatable
         ];
     }
 
+    // ✅ Tambahkan relasi jika diperlukan
 }
