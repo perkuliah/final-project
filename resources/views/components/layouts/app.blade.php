@@ -1,37 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assetss/img/apple-icon.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('assetss/img/favicon.png') }}">
-    <title>
-        @yield('title', 'Dashboard')
-    </title>
-    <!-- Fonts and icons     -->
+    <title>@yield('title', 'Dashboard')</title>
+
+    <!-- Fonts and icons -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-    <!-- Nucleo Icons -->
     <link href="{{ asset('assetss/css/nucleo-icons.css') }}" rel="stylesheet" />
     <link href="{{ asset('assetss/css/nucleo-svg.css') }}" rel="stylesheet" />
-    <!-- Font Awesome Icons -->
-    {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
-    <link href="{{ asset('assetss/css/nucleo-svg.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assetss/css/soft-ui-dashboard.css') }}" rel="stylesheet" />
-    <style>
-
-    </style>
     @livewireStyles
-
+    @stack('css')
 </head>
 
 <body class="g-sidenav-show bg-gray-100">
-
-
-<div id="app">
-
+    <div id="app">
         <livewire:atom.sidebar/>
         <livewire:atom.navbar/>
         <div id="main">
@@ -40,36 +29,51 @@
                     <i class="bi bi-justify fs-3"></i>
                 </a>
             </header>
-            
-        <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        {{ $slot }} 
-        </main>
-
-            
+            <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+                {{ $slot }}
+            </main>
         </div>
     </div>
 
-    <!--   Core JS Files   -->
+    <!-- Core JS Files -->
     <script src="{{ asset('assetss/js/core/popper.min.js') }}"></script>
     <script src="{{ asset('assetss/js/core/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assetss/js/plugins/smooth-scrollbar.min.js') }}"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         var win = navigator.platform.indexOf('Win') > -1;
         if (win && document.querySelector('#sidenav-scrollbar')) {
-            var options = {
-                damping: '0.5'
-            }
+            var options = { damping: '0.5' };
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
     </script>
-    
-    <!-- Github buttons -->
+
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assetss/js/soft-ui-dashboard.js') }}"></script>
-    {{-- <script src="{{ asset('brutalist/script.js') }}"></script>
-    <script src="{{ asset('brutalist/form-utils.js') }}"></script> --}}
+
+    <!-- Toast Container -->
+    <div id="toast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <script>
+        document.addEventListener('livewire:load', function () {
+            Livewire.on('show-alert', data => {
+                const toast = `
+                    <div class="toast align-items-center text-white bg-${data.type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">${data.message}</div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
+                    </div>`;
+                document.getElementById('toast').innerHTML = toast;
+                const bsToast = new bootstrap.Toast(document.querySelector('#toast .toast'));
+                bsToast.show();
+            });
+        });
+    </script>
+
+    @stack('scripts')
+
     @livewireScripts
 </body>
-
 </html>

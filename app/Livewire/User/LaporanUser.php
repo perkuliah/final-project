@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\User;
 
 use Livewire\Component;
 use Livewire\Attributes\Layout;
@@ -9,7 +9,7 @@ use App\Models\Laporan as LaporanModel;
 use Illuminate\Support\Facades\Storage;
 
 #[Layout('components.layouts.app')]
-class Laporan extends Component
+class LaporanUser extends Component
 {
     public $search = '';
 
@@ -48,29 +48,26 @@ class Laporan extends Component
         }
     }
 
-  public function render()
-{
-    $query = LaporanModel::query();
+    public function render()
+    {
+        $laporans = LaporanModel::query();
 
-    // 🔒 Filter berdasarkan role: user hanya lihat miliknya
-    if (Auth::user()->role === 'user') {
-        $query->where('user_id', Auth::id());
+        if(Auth::user()->role == 'user') {
+            $laporans->where('user_id', Auth::user()->id);
+        }
+
+        if(!empty($this->search)) {
+            $laporans->where(function ($query) {
+                $query->where('pemasukan', 'like', '%' . $this->search . '%')
+                    ->orWhere('pengeluaran', 'like', '%' . $this->search . '%')
+                    ->orWhere('judul', 'like', '%' . $this->search . '%')
+                    ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
+                    ->orWhere('status', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        return view('livewire.user.laporan-user',[
+            'laporans' => $laporans->orderBy('id', 'desc')->get()
+        ]);
     }
-
-    // 🔍 Pencarian (hanya pada kolom yang relevan)
-    if (!empty($this->search)) {
-        $searchTerm = '%' . $this->search . '%';
-        $query->where(function ($q) use ($searchTerm) {
-            $q->where('judul', 'like', $searchTerm)
-              ->orWhere('deskripsi', 'like', $searchTerm)
-              ->orWhere('status', 'like', $searchTerm)
-              ->orWhere('pemasukan', 'like', $searchTerm)
-              ->orWhere('pengeluaran', 'like', $searchTerm);
-        });
-    }
-
-    $laporans = $query->with('user')->orderBy('id', 'desc')->get();
-
-    return view('livewire.laporan', compact('laporans'));
-}
 }

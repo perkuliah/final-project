@@ -14,7 +14,7 @@
                     {{ str_replace('-', ' ', Route::currentRouteName()) }}</h6>
             </nav>
             <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4 d-flex justify-content-end" id="navbar">
-                
+
                 <ul class="navbar-nav justify-content-end">
                     <li class="nav-item d-flex align-items-center">
                         <a href="javascript:;" class="nav-link text-body font-weight-bold px-0">
@@ -29,9 +29,12 @@
                             </div>
                         </a>
                     </li>
-                    
+
                     <li class="nav-item dropdown pe-2 d-flex align-items-center me-3">
                         <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            @auth
+                                <span class="badge badge-sm bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
+                                @endauth
                             <i class="fa fa-bell cursor-pointer"></i>
                         </a>
                     </li>
@@ -92,7 +95,7 @@
                 </ul>
             </div>
             <!-- User Dropdown -->
-           
+
         </div>
     </nav>
 

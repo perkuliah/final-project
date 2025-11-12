@@ -3,12 +3,12 @@
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-lg-8">
-                <h1 class="font-weight-bolder mb-0">Daftar User</h1>
-                <p class="text-sm text-muted">Kelola data user aplikasi</p>
+                <h1 class="font-weight-bolder mb-0">Daftar Anggota</h1>
+                <p class="text-sm text-muted">Kelola data anggota aplikasi</p>
             </div>
             <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a href="{{ route('register') }}" class="btn bg-gradient-primary btn-sm">
-                    <i class="fas fa-plus me-2"></i> Tambah User
+                <a href="{{ route('register') }}"  wire:navigate class="btn bg-gradient-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i> Tambah Anggota
                 </a>
             </div>
         </div>
@@ -83,7 +83,7 @@
                                     <div class="d-flex px-2 py-1">
                                         <div>
                                             @if ($user->foto)
-                                                <img src="{{ asset('storage/' . $user->foto) }}" class="avatar avatar-sm me-3" alt="{{ $user->name }}">
+                                                <img src="{{ asset('storage/users/' . $user->foto) }}" class="avatar avatar-sm me-3" alt="{{ $user->name }}">
                                             @else
                                                 <div class="avatar avatar-sm me-3 bg-gradient-secondary">
                                                     <span class="text-white">{{ substr($user->name, 0, 2) }}</span>
@@ -130,8 +130,8 @@
                                     <p class="text-xs font-weight-bold mb-0 text-truncate" style="max-width: 150px;">{{ $user->alamat ?? '-' }}</p>
                                 </td>
                                 <td class="align-middle text-end">
-                                    
-                                    <a href="{{ route('list-user-edit', $user->id) }}" class="text-info px-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+
+                                    <a href="{{ route('list-user-edit', $user->id) }}" wire:navigate class="text-info px-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <button wire:click="confirmDelete({{ $user->id }})" class="text-danger px-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus">

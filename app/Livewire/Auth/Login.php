@@ -13,8 +13,6 @@ class Login extends Component
     public $password;
     public $remember = false;
 
-    public $success = false;
-
     protected $rules = [
         'email' => 'required|email',
         'password' => 'required|min:4',
@@ -24,20 +22,29 @@ class Login extends Component
     {
         $this->validate();
 
-        // Coba login user
-        if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        $credentials = [
+            'email' => $this->email,
+            'password' => $this->password,
+        ];
+
+        if (Auth::attempt($credentials, $this->remember)) {
             session()->regenerate();
 
-            $this->success = true;
+            $user = Auth::user();
 
-            
+            // Redirect berdasarkan role
+            if ($user->role === 'admin') {
+                return $this->redirectRoute('dashboard-admin', ['id' => $user->id], navigate: false);
+            } elseif ($user->role === 'user') {
+                return $this->redirectRoute('profile-user', ['id' => $user->id], navigate: false);
+            }
 
-            // Redirect ke dashboard
-            return redirect()->route('dashboard');
+            // Fallback: ke home jika role tidak dikenali
+            return $this->redirectRoute('home', navigate: false);
         }
 
-        // Jika gagal
-        $this->addError('email', 'Email or password is incorrect.');
+        // Jika gagal login
+        $this->addError('email', 'Email atau password salah.');
     }
 
     public function render()

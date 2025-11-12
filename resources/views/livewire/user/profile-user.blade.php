@@ -21,7 +21,7 @@
                             <div class="text-center">
                                 <div class="mb-4 text-center mt-7">
                                 @if($foto)
-                                    <img src="{{ asset('storage/users/' . $foto) }}" class="img-profile" alt="Avatar">
+                                    <img src="{{ asset('storage/' . $foto) }}" class="img-profile" alt="Avatar">
                                 @else
                                     <img src="{{ asset('assetss/img/no-image.jpg') }}" class="img-profile" alt="Avatar">
                                         @endif
@@ -83,8 +83,8 @@
                                         @if($newFoto)
                                             <div class="mt-2">
                                                 <p class="text-sm text-muted">Preview:</p>
-                                                <img src="{{ $newFoto->temporaryUrl() }}"
-                                                     class="img-thumbnail"
+                                                <img src="{{ $newFoto->temporaryUrl() }}" 
+                                                     class="img-thumbnail" 
                                                      style="max-height: 150px; object-fit: cover;">
                                             </div>
                                         @endif
@@ -95,7 +95,7 @@
                                         @error('password') <small class="text-danger text-xs">{{ $message }}</small> @enderror
                                     </div>
                                     <div class="col-12">
-                                        <button type="submit"
+                                        <button type="submit" 
                                                 class="btn bg-gradient-primary btn-sm"
                                                 wire:loading.attr="disabled">
                                             <span wire:loading.remove>Simpan Perubahan</span>
@@ -114,20 +114,3 @@
         </div>
     </main>
 </div>
-
-{{-- SweetAlert setelah update sukses --}}
-@script
-<script>
-    $wire.on('profileUpdated', () => {
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: 'Profil Anda telah diperbarui.',
-            timer: 2000,
-            showConfirmButton: false
-        }).then(() => {
-            window.location.reload();
-        });
-    });
-</script>
-@endscript

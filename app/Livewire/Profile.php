@@ -15,11 +15,18 @@ class Profile extends Component
 {
     use WithFileUploads;
 
-    public $name, $username, $email, $whatsapp, $alamat, $foto, $password, $newFoto;
+    public $name;
+    public $username;
+    public $email;
+    public $whatsapp;
+    public $alamat;
+    public $foto;
+    public $password;
+    public $newFoto;
 
     public function mount()
     {
-        $user           = Auth::user();
+        $user = Auth::user();
 
         $this->name     = $user->name;
         $this->username = $user->username;
@@ -31,45 +38,61 @@ class Profile extends Component
 
     public function updateProfile()
     {
-        $user = User::findOrFail(Auth::user()->id);
+        $user = Auth::user();
 
-        $this->validate([
+        $rules = [
             'name'      => 'required|string|max:255',
             'username'  => 'nullable|string|max:255|unique:users,username,' . $user->id,
             'email'     => 'required|email|unique:users,email,' . $user->id,
-            'whatsapp'  => 'required|string|unique:users,whatsapp,' . $user->id,
-            'alamat'    => 'nullable|string',
-            'newFoto'   => 'nullable|image|max:2048',
-            'password'  => 'nullable'
-        ]);
+            'whatsapp'  => 'required|string|max:20|unique:users,whatsapp,' . $user->id,
+            'alamat'    => 'nullable|string|max:500',
+            'newFoto'   => 'nullable|image|mimes:png,jpg,jpeg|max:5000', // max 2MB
+            'password'  => 'nullable|string|min:8',
+        ];
 
+        $messages = [
+            'whatsapp.unique' => 'Nomor WhatsApp sudah digunakan oleh pengguna lain.',
+            'email.unique'    => 'Email sudah digunakan oleh pengguna lain.',
+            'username.unique' => 'Username sudah digunakan.',
+            'password.min'    => 'Password minimal 8 karakter.',
+        ];
+
+        $this->validate($rules, $messages);
+
+        // Handle foto upload
         if ($this->newFoto) {
+            // Hapus foto lama jika ada
             if ($user->foto && Storage::disk('public')->exists('users/' . $user->foto)) {
                 Storage::disk('public')->delete('users/' . $user->foto);
             }
-            $this->newFoto->storeAs('public/users', $this->newFoto->hashName());
-            $user->foto = $this->newFoto->hashName();
+
+            $filename = $this->newFoto->hashName();
+            $this->newFoto->storeAs('public/users', $filename);
+            $user->foto = $filename;
         }
 
-        $user->name = $this->name;
-        $user->username = $this->username;
-        $user->email = $this->email;
-        $user->whatsapp = $this->whatsapp;
-        $user->alamat = $this->alamat;
+        // Update data user
+        $user->fill([
+            'name'      => $this->name,
+            'username'  => $this->username,
+            'email'     => $this->email,
+            'whatsapp'  => $this->whatsapp,
+            'alamat'    => $this->alamat,
+        ]);
 
-        if ($this->password) {
+        // Update password hanya jika diisi
+        if (!empty($this->password)) {
             $user->password = Hash::make($this->password);
         }
 
         $user->save();
 
-        // $this->redirectIntended(route('user.profile'), navigate: true);
-
+        // Dispatch event untuk SweetAlert + Redirect
         $this->dispatch('profileUpdated');
 
-        // 1. Emit / Dispatch   = Orang yang pencet bell rumah
-        // 2. Listener          = Orang rumah yang mendengar bell
-        // 3. Handler           = Orang rumah yang merespon bell (membuka pintu rumah)
+        // Reset password input agar tidak tersimpan di form
+        $this->password = '';
+        $this->newFoto = null;
     }
 
     public function render()
