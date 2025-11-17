@@ -22,6 +22,14 @@
     .stats-icon.red { background: linear-gradient(310deg, #ea0606, #ff667c); }
     .stats-icon.blue { background: linear-gradient(310deg, #2152ff, #21d4fd); }
     .stats-icon.green { background: linear-gradient(310deg, #17ad37, #98ec2d); }
+    .stats-icon.orange { background: linear-gradient(310deg, #ff8c00, #ffa500); }
+
+    .table-responsive {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .saldo-positif { color: #17ad37; font-weight: bold; }
+    .saldo-negatif { color: #ea0606; font-weight: bold; }
 </style>
 @endpush
 
@@ -123,8 +131,6 @@
                 </div>
             </div>
 
-
-
             <!-- Kolom Kanan: Pie Chart + Ringkasan Keuangan -->
             <div class="col-12 col-lg-3">
                 <!-- Pie Chart: Status -->
@@ -137,7 +143,7 @@
                     </div>
                 </div>
 
-                <!-- Ringkasan Keuangan (Opsional) -->
+                <!-- Ringkasan Keuangan -->
                 <div class="card shadow-sm border">
                     <div class="card-header">
                         <h5 class="mb-0">Ringkasan Keuangan</h5>
@@ -145,51 +151,110 @@
                     <div class="card-body">
                         <p><strong>Pemasukan:</strong> Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</p>
                         <p><strong>Pengeluaran:</strong> Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</p>
-                        <p><strong>jumlah Pelapor:</strong> {{ $jumlahPelapor }}</p>
+                        <p><strong>Saldo:</strong>
+                            <span class="{{ ($totalPemasukan - $totalPengeluaran) >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">
+                                Rp {{ number_format($totalPemasukan - $totalPengeluaran, 0, ',', '.') }}
+                            </span>
+                        </p>
+                        <p><strong>Jumlah Pelapor:</strong> {{ $jumlahPelapor }}</p>
                     </div>
                 </div>
             </div>
 
- <!-- Grafik Pemasukan & Pengeluaran per Lokasi -->
-<div class="row mt-4">
-    <!-- Pemasukan -->
-    <div class="col-12 col-lg-6">
-        <div class="card shadow-sm border">
-            <div class="card-header">
-                <h5 class="mb-0">Pemasukan per Lokasi</h5>
-            </div>
-            <div class="card-body">
-                <div id="grafik-pemasukan-lokasi" wire:ignore></div>
-            </div>
-        </div>
-    </div>
+            <!-- Grafik Pemasukan & Pengeluaran per Lokasi -->
+            <div class="row mt-4">
+                <!-- Pemasukan -->
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm border">
+                        <div class="card-header">
+                            <h5 class="mb-0">Pemasukan per Lokasi</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="grafik-pemasukan-lokasi" wire:ignore></div>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Pengeluaran -->
-    <div class="col-12 col-lg-6">
-        <div class="card shadow-sm border">
-            <div class="card-header">
-                <h5 class="mb-0">Pengeluaran per Lokasi</h5>
+                <!-- Pengeluaran -->
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm border">
+                        <div class="card-header">
+                            <h5 class="mb-0">Pengeluaran per Lokasi</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="grafik-pengeluaran-lokasi" wire:ignore></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div id="grafik-pengeluaran-lokasi" wire:ignore></div>
-            </div>
-        </div>
-    </div>
-</div>
 
-    <!-- Bar Chart: Laporan per Pelapor -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card shadow-sm border">
-            <div class="card-header">
-                <h5 class="mb-0">Laporan per Pelapor</h5>
+            <!-- Bar Chart: Laporan per Pelapor -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border">
+                        <div class="card-header">
+                            <h5 class="mb-0">Laporan per Pelapor</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="grafik-laporan-pelapor" wire:ignore></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div id="grafik-laporan-pelapor" wire:ignore></div>
+
+            <!-- TABEL KEUANGAN PER PELAPOR - SECTION BARU -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border">
+                        <div class="card-header">
+                            <h5 class="mb-0">Detail Keuangan per Pelapor</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Nama Pelapor</th>
+                                            <th>Jumlah Laporan</th>
+                                            <th>Total Pemasukan</th>
+                                            <th>Total Pengeluaran</th>
+                                            <th>Saldo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($keuanganPerPelapor as $nama => $data)
+                                            <tr>
+                                                <td>{{ $nama }}</td>
+                                                <td class="text-center">{{ $data['jumlah_laporan'] }}</td>
+                                                <td class="text-end">Rp {{ number_format($data['pemasukan'], 0, ',', '.') }}</td>
+                                                <td class="text-end">Rp {{ number_format($data['pengeluaran'], 0, ',', '.') }}</td>
+                                                <td class="text-end {{ $data['saldo'] >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">
+                                                    Rp {{ number_format($data['saldo'], 0, ',', '.') }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center">Tidak ada data pelapor</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                    <tfoot class="table-secondary">
+                                        <tr>
+                                            <th>Total</th>
+                                            <th class="text-center">{{ $totalLaporan }}</th>
+                                            <th class="text-end">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</th>
+                                            <th class="text-end">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</th>
+                                            <th class="text-end {{ ($totalPemasukan - $totalPengeluaran) >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">
+                                                Rp {{ number_format($totalPemasukan - $totalPengeluaran, 0, ',', '.') }}
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
         </section>
     </div>
@@ -359,5 +424,3 @@
     document.addEventListener('livewire:navigated', renderCharts);
 </script>
 @endpush
-
-

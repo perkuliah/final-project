@@ -30,16 +30,9 @@
                         </a>
                     </li>
 
-                    <li class="nav-item dropdown pe-2 d-flex align-items-center me-3">
-                        <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            @auth
-                                <span class="badge badge-sm bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
-                                @endauth
-                            <i class="fa fa-bell cursor-pointer"></i>
-                        </a>
-                    </li>
+                    
                     <!-- User Dropdown -->
-<li class="nav-item dropdown pe-2 d-flex align-items-center ">
+    <li class="nav-item dropdown pe-2 d-flex align-items-center ">
     <a href="javascript:;" class="nav-link text-body p-0" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
         <div class="avatar avatar-sm rounded-circle bg-gradient-primary d-flex align-items-center justify-content-center">
             <span class="text-white text-sm font-weight-bold">
@@ -76,7 +69,7 @@
             <hr class="dropdown-divider">
         </li>
         <li>
-            <form method="POST" action="{{ route('logout') }}" class="m-0">
+            <form action="{{ route('logout') }}" class="m-0">
                 @csrf
                 <button type="submit" class="dropdown-item border-radius-md text-danger">
                     <div class="d-flex py-1">
@@ -94,8 +87,7 @@
 </li>
                 </ul>
             </div>
-            <!-- User Dropdown -->
-
-        </div>
-    </nav>
+            </div>
+            </nav>
+            </main>
 

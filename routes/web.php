@@ -51,5 +51,4 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::get('/dashboard-user', DashboardUser::class)->name('dashboard-user');
     Route::get('/laporan/create-laporan-user', CreateLaporan::class)->name('createlaporanuser');
     Route::get('/Task', UserTasks::class)->name('tasks.user');
-    Route::get('/logout', Logout::class)->name('logout');
 });

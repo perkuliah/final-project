@@ -48,6 +48,26 @@ class Laporan extends Component
         }
     }
 
+    public function getLaporan($id)
+{
+    $laporan = LaporanModel::with('user')->findOrFail($id);
+
+    // Otorisasi: hanya pemilik atau admin yang boleh lihat
+    if ($laporan->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
+        abort(403, 'Unauthorized');
+    }
+
+    // Pastikan URL gambar lengkap
+    if ($laporan->gambar) {
+        $laporan->gambar = asset($laporan->gambar);
+    }
+
+    // Format tanggal ke ISO untuk JS
+    $laporan->tanggal = $laporan->tanggal ? $laporan->tanggal->toIso8601String() : null;
+
+    return $laporan->toArray();
+}
+
   public function render()
 {
     $query = LaporanModel::query();

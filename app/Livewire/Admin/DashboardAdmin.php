@@ -21,7 +21,8 @@ class DashboardAdmin extends Component
     public $laporanPerBulan;
     public $pemasukanPerLokasi;
     public $pengeluaranPerLokasi;
-    public $laporanPerPelapor; // Tambahkan properti ini
+    public $laporanPerPelapor;
+    public $keuanganPerPelapor; // Tambahkan properti baru
 
     public function mount()
     {
@@ -43,47 +44,63 @@ class DashboardAdmin extends Component
             ->map->count()
             ->toArray();
 
-
         // Ambil pemasukan & pengeluaran per lokasi (hanya status 'Selesai')
-    $lokasiData = Laporan::where('status', Laporan::STATUS_Selesai)
-        ->selectRaw('lokasi, SUM(pemasukan) as total_pemasukan, SUM(pengeluaran) as total_pengeluaran')
-        ->groupBy('lokasi')
-        ->get();
+        $lokasiData = Laporan::where('status', Laporan::STATUS_Selesai)
+            ->selectRaw('lokasi, SUM(pemasukan) as total_pemasukan, SUM(pengeluaran) as total_pengeluaran')
+            ->groupBy('lokasi')
+            ->get();
 
-    // Inisialisasi array dengan semua lokasi (agar konsisten urutan & tampil meski 0)
-    $allLokasi = Laporan::getLokasiOptions();
-    $this->pemasukanPerLokasi = array_fill_keys($allLokasi, 0);
-    $this->pengeluaranPerLokasi = array_fill_keys($allLokasi, 0);
+        // Inisialisasi array dengan semua lokasi
+        $allLokasi = Laporan::getLokasiOptions();
+        $this->pemasukanPerLokasi = array_fill_keys($allLokasi, 0);
+        $this->pengeluaranPerLokasi = array_fill_keys($allLokasi, 0);
 
-    foreach ($lokasiData as $item) {
-        if (in_array($item->lokasi, $allLokasi)) {
-            $this->pemasukanPerLokasi[$item->lokasi] = (int) $item->total_pemasukan;
-            $this->pengeluaranPerLokasi[$item->lokasi] = (int) $item->total_pengeluaran;
+        foreach ($lokasiData as $item) {
+            if (in_array($item->lokasi, $allLokasi)) {
+                $this->pemasukanPerLokasi[$item->lokasi] = (int) $item->total_pemasukan;
+                $this->pengeluaranPerLokasi[$item->lokasi] = (int) $item->total_pengeluaran;
+            }
         }
-    }
 
-    // Ambil jumlah laporan per pelapor (user)
-    $laporanUsers = Laporan::with('user:id,name') // hanya ambil id dan name untuk efisiensi
-        ->select('user_id', DB::raw('COUNT(*) as jumlah_laporan'))
-        ->groupBy('user_id')
-        ->get();
+        // Ambil jumlah laporan per pelapor (user)
+        $laporanUsers = Laporan::with('user:id,name')
+            ->select('user_id', DB::raw('COUNT(*) as jumlah_laporan'))
+            ->groupBy('user_id')
+            ->get();
 
-    // Siapkan array: nama pelapor => jumlah laporan
-    $this->laporanPerPelapor = [];
+        $this->laporanPerPelapor = [];
+        foreach ($laporanUsers as $item) {
+            $nama = $item->user ? $item->user->name : 'Pelapor Tanpa Nama';
+            $this->laporanPerPelapor[$nama] = (int) $item->jumlah_laporan;
+        }
+        arsort($this->laporanPerPelapor);
 
-    foreach ($laporanUsers as $item) {
-        $nama = $item->user ? $item->user->name : 'Pelapor Tanpa Nama';
-        $this->laporanPerPelapor[$nama] = (int) $item->jumlah_laporan;
-    }
+        // AMBIL DATA KEUANGAN PER PELAPOR - DATA BARU
+        $keuanganUsers = Laporan::with('user:id,name')
+            ->select('user_id',
+                DB::raw('SUM(pemasukan) as total_pemasukan'),
+                DB::raw('SUM(pengeluaran) as total_pengeluaran'),
+                DB::raw('COUNT(*) as jumlah_laporan')
+            )
+            ->groupBy('user_id')
+            ->get();
 
-    // Opsional: urutkan dari tertinggi ke terendah
-    arsort($this->laporanPerPelapor);
-
+        $this->keuanganPerPelapor = [];
+        foreach ($keuanganUsers as $item) {
+            $nama = $item->user ? $item->user->name : 'Pelapor Tanpa Nama';
+            $this->keuanganPerPelapor[$nama] = [
+                'pemasukan' => (int) $item->total_pemasukan,
+                'pengeluaran' => (int) $item->total_pengeluaran,
+                'jumlah_laporan' => (int) $item->jumlah_laporan,
+                'saldo' => (int) ($item->total_pemasukan - $item->total_pengeluaran)
+            ];
+        }
     }
 
     public function render()
     {
         return view('livewire.admin.dashboard-admin', [
-            'laporanPerBulan' => $this->laporanPerBulan,]);
+            'laporanPerBulan' => $this->laporanPerBulan,
+        ]);
     }
 }
