@@ -5,6 +5,8 @@ namespace App\Livewire\Auth;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 #[Layout('components.layouts.auth')]
 class Login extends Component
@@ -12,6 +14,7 @@ class Login extends Component
     public $email;
     public $password;
     public $remember = false;
+    public $showVerificationMessage = false;
 
     protected $rules = [
         'email' => 'required|email',
@@ -21,34 +24,50 @@ class Login extends Component
     public function login()
     {
         $this->validate();
+        $this->showVerificationMessage = false;
 
-        $credentials = [
-            'email' => $this->email,
-            'password' => $this->password,
-        ];
+        // Cari user dan verifikasi status email
+        $user = User::where('email', $this->email)->first();
 
-        if (Auth::attempt($credentials, $this->remember)) {
-            session()->regenerate();
-
-            $user = Auth::user();
-
-            // Redirect berdasarkan role
-            if ($user->role === 'admin') {
-                return $this->redirectRoute('dashboard-admin', ['id' => $user->id], navigate: false);
-            } elseif ($user->role === 'user') {
-                return $this->redirectRoute('profile-user', ['id' => $user->id], navigate: false);
-            }
-
-            // Fallback: ke home jika role tidak dikenali
-            return $this->redirectRoute('home', navigate: false);
+        // Cek jika user tidak ditemukan
+        if (!$user) {
+            $this->addError('email', 'Email atau password salah.');
+            return;
         }
 
-        // Jika gagal login
-        $this->addError('email', 'Email atau password salah.');
+        // Cek jika email belum diverifikasi
+        if (is_null($user->email_verified_at)) {
+            $this->showVerificationMessage = true;
+            $this->addError('email', 'Email Anda belum diverifikasi. Silakan verifikasi email terlebih dahulu sebelum login.');
+            return;
+        }
+
+        // Cek jika password salah
+        if (!Auth::attempt([
+            'email' => $this->email,
+            'password' => $this->password
+        ], $this->remember)) {
+            $this->addError('email', 'Email atau password salah.');
+            return;
+        }
+
+        session()->regenerate();
+
+        $user = Auth::user();
+
+        // Redirect berdasarkan role
+        if ($user->role === 'admin') {
+            return $this->redirectRoute('dashboard-admin', navigate: false);
+        } elseif ($user->role === 'user') {
+            return $this->redirectRoute('dashboard-user', navigate: false);
+        }
+
+        return $this->redirectRoute('home', navigate: false);
     }
 
-    public function render()
+    // Method untuk reset pesan verifikasi
+    public function resetVerificationMessage()
     {
-        return view('livewire.auth.login');
+        $this->showVerificationMessage = false;
     }
 }

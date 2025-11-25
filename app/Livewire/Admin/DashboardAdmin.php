@@ -7,6 +7,8 @@ use App\Models\Laporan;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 #[Layout('components.layouts.app')]
 class DashboardAdmin extends Component
@@ -22,9 +24,14 @@ class DashboardAdmin extends Component
     public $pemasukanPerLokasi;
     public $pengeluaranPerLokasi;
     public $laporanPerPelapor;
-    public $keuanganPerPelapor; // Tambahkan properti baru
+    public $keuanganPerPelapor;
 
     public function mount()
+    {
+        $this->loadData();
+    }
+
+    public function loadData()
     {
         $this->totalLaporan = Laporan::count();
         $this->laporanPending = Laporan::where('status', 'menunggu')->count();
@@ -44,9 +51,8 @@ class DashboardAdmin extends Component
             ->map->count()
             ->toArray();
 
-        // Ambil pemasukan & pengeluaran per lokasi (hanya status 'Selesai')
-        $lokasiData = Laporan::where('status', Laporan::STATUS_Selesai)
-            ->selectRaw('lokasi, SUM(pemasukan) as total_pemasukan, SUM(pengeluaran) as total_pengeluaran')
+        // Ambil pemasukan & pengeluaran per lokasi
+        $lokasiData = Laporan::selectRaw('lokasi, SUM(pemasukan) as total_pemasukan, SUM(pengeluaran) as total_pengeluaran')
             ->groupBy('lokasi')
             ->get();
 
@@ -62,20 +68,15 @@ class DashboardAdmin extends Component
             }
         }
 
+        // AMBIL DATA KEUANGAN PER PELAPOR
+        $this->keuanganPerPelapor = $this->getKeuanganPerPelapor();
+
         // Ambil jumlah laporan per pelapor (user)
-        $laporanUsers = Laporan::with('user:id,name')
-            ->select('user_id', DB::raw('COUNT(*) as jumlah_laporan'))
-            ->groupBy('user_id')
-            ->get();
+        $this->laporanPerPelapor = $this->getLaporanPerPelapor();
+    }
 
-        $this->laporanPerPelapor = [];
-        foreach ($laporanUsers as $item) {
-            $nama = $item->user ? $item->user->name : 'Pelapor Tanpa Nama';
-            $this->laporanPerPelapor[$nama] = (int) $item->jumlah_laporan;
-        }
-        arsort($this->laporanPerPelapor);
-
-        // AMBIL DATA KEUANGAN PER PELAPOR - DATA BARU
+    protected function getKeuanganPerPelapor()
+    {
         $keuanganUsers = Laporan::with('user:id,name')
             ->select('user_id',
                 DB::raw('SUM(pemasukan) as total_pemasukan'),
@@ -85,22 +86,123 @@ class DashboardAdmin extends Component
             ->groupBy('user_id')
             ->get();
 
-        $this->keuanganPerPelapor = [];
+        $data = [];
         foreach ($keuanganUsers as $item) {
-            $nama = $item->user ? $item->user->name : 'Pelapor Tanpa Nama';
-            $this->keuanganPerPelapor[$nama] = [
+            $nama = $item->user ? $this->cleanString($item->user->name) : 'Pelapor Tanpa Nama';
+            $data[$nama] = [
                 'pemasukan' => (int) $item->total_pemasukan,
                 'pengeluaran' => (int) $item->total_pengeluaran,
                 'jumlah_laporan' => (int) $item->jumlah_laporan,
                 'saldo' => (int) ($item->total_pemasukan - $item->total_pengeluaran)
             ];
         }
+
+        return $data;
+    }
+
+    protected function getLaporanPerPelapor()
+    {
+        $laporanUsers = Laporan::with('user:id,name')
+            ->select('user_id', DB::raw('COUNT(*) as jumlah_laporan'))
+            ->groupBy('user_id')
+            ->get();
+
+        $data = [];
+        foreach ($laporanUsers as $item) {
+            $nama = $item->user ? $this->cleanString($item->user->name) : 'Pelapor Tanpa Nama';
+            $data[$nama] = (int) $item->jumlah_laporan;
+        }
+
+        arsort($data);
+        return $data;
+    }
+
+    protected function cleanString($string)
+    {
+        // Bersihkan string dari karakter non-UTF-8
+        $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        $string = iconv('UTF-8', 'UTF-8//IGNORE', $string);
+        return preg_replace('/[^\x20-\x7E\xA0-\xFF]/u', '', $string);
+    }
+
+    public function downloadExcel()
+    {
+        $filename = 'laporan-keuangan-pelapor-' . now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0'
+        ];
+
+        $callback = function() {
+            $file = fopen('php://output', 'w');
+
+            // Add BOM for UTF-8
+            fwrite($file, "\xEF\xBB\xBF");
+
+            // Header
+            fputcsv($file, [
+                'No',
+                'Nama Pelapor',
+                'Jumlah Laporan',
+                'Total Pemasukan',
+                'Total Pengeluaran',
+                'Saldo',
+                'Status Saldo'
+            ]);
+
+            // Data
+            $counter = 1;
+            foreach ($this->keuanganPerPelapor as $nama => $item) {
+                fputcsv($file, [
+                    $counter++,
+                    $nama,
+                    $item['jumlah_laporan'],
+                    'Rp ' . number_format($item['pemasukan'], 0, ',', '.'),
+                    'Rp ' . number_format($item['pengeluaran'], 0, ',', '.'),
+                    'Rp ' . number_format($item['saldo'], 0, ',', '.'),
+                    $item['saldo'] >= 0 ? 'Positif' : 'Negatif'
+                ]);
+            }
+
+            // Total
+            $totalSaldo = $this->totalPemasukan - $this->totalPengeluaran;
+            fputcsv($file, [
+                'TOTAL',
+                '',
+                $this->totalLaporan,
+                'Rp ' . number_format($this->totalPemasukan, 0, ',', '.'),
+                'Rp ' . number_format($this->totalPengeluaran, 0, ',', '.'),
+                'Rp ' . number_format($totalSaldo, 0, ',', '.'),
+                $totalSaldo >= 0 ? 'Positif' : 'Negatif'
+            ]);
+
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
+    }
+
+    public function downloadPdf()
+    {
+        $data = [
+            'data' => $this->keuanganPerPelapor,
+            'totalPemasukan' => $this->totalPemasukan,
+            'totalPengeluaran' => $this->totalPengeluaran,
+            'totalLaporan' => $this->totalLaporan,
+            'totalSaldo' => $this->totalPemasukan - $this->totalPengeluaran,
+            'tanggal' => now()->format('d F Y')
+        ];
+
+        $pdf = Pdf::loadView('exports.keuangan-pelapor-pdf', $data);
+        return $pdf->download('laporan-keuangan-pelapor-' . now()->format('Y-m-d') . '.pdf');
     }
 
     public function render()
     {
-        return view('livewire.admin.dashboard-admin', [
-            'laporanPerBulan' => $this->laporanPerBulan,
-        ]);
+        return view('livewire.admin.dashboard-admin');
     }
 }

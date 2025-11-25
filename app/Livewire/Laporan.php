@@ -50,22 +50,21 @@ class Laporan extends Component
 
     public function getLaporan($id)
 {
-    $laporan = LaporanModel::with('user')->findOrFail($id);
-
-    // Otorisasi: hanya pemilik atau admin yang boleh lihat
-    if ($laporan->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
-        abort(403, 'Unauthorized');
+    $laporan = LaporanModel::with('user')->find($id); // ✅ Gunakan LaporanModel
+    if (! $laporan) {
+        return [];
     }
 
-    // Pastikan URL gambar lengkap
-    if ($laporan->gambar) {
-        $laporan->gambar = asset($laporan->gambar);
-    }
-
-    // Format tanggal ke ISO untuk JS
-    $laporan->tanggal = $laporan->tanggal ? $laporan->tanggal->toIso8601String() : null;
-
-    return $laporan->toArray();
+    return [
+        'id' => $laporan->id,
+        'judul' => $laporan->judul,
+        'deskripsi' => $laporan->deskripsi,
+        'gambar' => $laporan->gambar ? asset($laporan->gambar) : null,
+        'tanggal' => $laporan->tanggal,
+        'pemasukan' => $laporan->pemasukan,
+        'pengeluaran' => $laporan->pengeluaran,
+        'status' => $laporan->status,
+    ];
 }
 
   public function render()

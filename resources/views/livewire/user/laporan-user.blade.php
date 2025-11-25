@@ -79,7 +79,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ \Carbon\Carbon::parse($laporan->tanggal)->format('d M Y') }}</td>
-                                            <td>{{ Str::limit($laporan->judul, 30) }}</td>
+                                            <td>{{ is_numeric($laporan->pemasukan) ? 'Rp ' . number_format($laporan->pemasukan, 0, ',', '.') : '–' }}</td>
                                             <td>{{ $laporan->user->name ?? '–' }}</td>
                                             <td>
                                                 <span class="badge

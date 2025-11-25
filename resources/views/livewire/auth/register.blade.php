@@ -1,3 +1,5 @@
+@section('title', 'Daftarkan Anggota')
+
 <div>
     <style>
         /* Modern Brutalist Login Form - Complete & Self-Contained */
@@ -412,9 +414,6 @@
                         <label for="password" class="form-label">Password</label>
                         <div class="input-wrapper password-wrapper">
                             <input type="password" id="password" wire:model.defer="password" required autocomplete="new-password">
-                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
-                                <span class="toggle-text">SHOW</span>
-                            </button>
                         </div>
                         @error('password') <span class="error-message">{{ $message }}</span> @enderror
                     </div>
@@ -423,9 +422,6 @@
                         <label for="password_confirmation" class="form-label">Confirm Password</label>
                         <div class="input-wrapper password-wrapper">
                             <input type="password" id="password_confirmation" wire:model.defer="password_confirmation" required autocomplete="new-password">
-                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
-                                <span class="toggle-text">SHOW</span>
-                            </button>
                         </div>
                         @error('password_confirmation') <span class="error-message">{{ $message }}</span> @enderror
                     </div>
@@ -439,8 +435,8 @@
                                 <option value="admin">Admin</option>
                             </select>
                         </div>
-                        @error('role') 
-                            <small class="error-message">{{ $message }}</small> 
+                        @error('role')
+                            <small class="error-message">{{ $message }}</small>
                         @enderror
                     </div>
 

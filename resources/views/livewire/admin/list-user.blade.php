@@ -1,3 +1,5 @@
+@section('title', 'Daftar Anggota')
+
 <div>
     <div class="px-3 py-4">
         <!-- Header -->
@@ -7,7 +9,7 @@
                 <p class="text-sm text-muted">Kelola data anggota aplikasi</p>
             </div>
             <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a href="{{ route('register') }}"  wire:navigate class="btn bg-gradient-primary btn-sm">
+                <a href="{{ route('register') }}" wire:navigate class="btn bg-gradient-primary btn-sm">
                     <i class="fas fa-plus me-2"></i> Tambah Anggota
                 </a>
             </div>
@@ -25,20 +27,43 @@
         <!-- Search and Filters -->
         <div class="card mb-4">
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3 mb-md-0">
+                <div class="row g-3">
+                    <!-- Search Input -->
+                    <div class="col-md-4">
                         <label class="form-label">Cari User</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input type="text"
-                                   wire:model.debounce.300ms="search"
+                                   wire:model.live.debounce.300ms="search"
                                    class="form-control"
-                                   placeholder="Cari berdasarkan nama, email, username, atau role...">
+                                   placeholder="Cari berdasarkan nama, email, username...">
                         </div>
                     </div>
-                    <div class="col-md-6">
+
+                    <!-- Role Filter -->
+                    <div class="col-md-3">
+                        <label class="form-label">Filter Role</label>
+                        <select wire:model.live="roleFilter" class="form-select">
+                            <option value="">Semua Role</option>
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                        </select>
+                    </div>
+
+                    <!-- Email Status Filter -->
+                    <div class="col-md-3">
+                        <label class="form-label">Status Email</label>
+                        <select wire:model.live="emailStatusFilter" class="form-select">
+                            <option value="">Semua Status</option>
+                            <option value="verified">Terverifikasi</option>
+                            <option value="unverified">Belum Terverifikasi</option>
+                        </select>
+                    </div>
+
+                    <!-- Items Per Page -->
+                    <div class="col-md-2">
                         <label class="form-label">Data per Halaman</label>
-                        <select wire:model="perPage" class="form-select">
+                        <select wire:model.live="perPage" class="form-select">
                             <option value="5">5</option>
                             <option value="10">10</option>
                             <option value="15">15</option>
@@ -46,27 +71,69 @@
                             <option value="50">50</option>
                         </select>
                     </div>
+
+                    <!-- Active Filters Badges -->
+                    @if($search || $roleFilter || $emailStatusFilter)
+                    <div class="col-12">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <small class="text-muted">Filter aktif:</small>
+                            @if($search)
+                                <span class="badge bg-primary">
+                                    Pencarian: "{{ $search }}"
+                                    <button wire:click="$set('search', '')" class="btn-close btn-close-white ms-1" style="font-size: 0.6rem;"></button>
+                                </span>
+                            @endif
+                            @if($roleFilter)
+                                <span class="badge bg-info">
+                                    Role: {{ $roleFilter === 'admin' ? 'Admin' : 'User' }}
+                                    <button wire:click="$set('roleFilter', '')" class="btn-close btn-close-white ms-1" style="font-size: 0.6rem;"></button>
+                                </span>
+                            @endif
+                            @if($emailStatusFilter)
+                                <span class="badge bg-warning">
+                                    Status: {{ $emailStatusFilter === 'verified' ? 'Terverifikasi' : 'Belum Terverifikasi' }}
+                                    <button wire:click="$set('emailStatusFilter', '')" class="btn-close btn-close-white ms-1" style="font-size: 0.6rem;"></button>
+                                </span>
+                            @endif
+                            <button wire:click="resetFilters" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Reset Filter
+                            </button>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
 
         <!-- Users Table -->
         <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Daftar User</h5>
+                <small class="text-muted">Total: {{ $users->total() }} user</small>
+            </div>
             <div class="table-responsive">
                 <table class="table align-items-center mb-0">
                     <thead>
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" wire:click="sortBy('name')" style="cursor: pointer;">
-                                Nama
-                                @if ($sortField === 'name')
-                                    {!! $sortAsc ? '<i class="fas fa-sort-up ms-1"></i>' : '<i class="fas fa-sort-down ms-1"></i>' !!}
-                                @endif
+                                <div class="d-flex align-items-center">
+                                    <span>Nama</span>
+                                    @if ($sortField === 'name')
+                                        <i class="fas fa-sort-{{ $sortAsc ? 'up' : 'down' }} ms-1"></i>
+                                    @else
+                                        <i class="fas fa-sort ms-1 text-muted"></i>
+                                    @endif
+                                </div>
                             </th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" wire:click="sortBy('email')" style="cursor: pointer;">
-                                Email
-                                @if ($sortField === 'email')
-                                    {!! $sortAsc ? '<i class="fas fa-sort-up ms-1"></i>' : '<i class="fas fa-sort-down ms-1"></i>' !!}
-                                @endif
+                                <div class="d-flex align-items-center">
+                                    <span>Email</span>
+                                    @if ($sortField === 'email')
+                                        <i class="fas fa-sort-{{ $sortAsc ? 'up' : 'down' }} ms-1"></i>
+                                    @else
+                                        <i class="fas fa-sort ms-1 text-muted"></i>
+                                    @endif
+                                </div>
                             </th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Username</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">WhatsApp</th>
@@ -130,7 +197,6 @@
                                     <p class="text-xs font-weight-bold mb-0 text-truncate" style="max-width: 150px;">{{ $user->alamat ?? '-' }}</p>
                                 </td>
                                 <td class="align-middle text-end">
-
                                     <a href="{{ route('list-user-edit', $user->id) }}" wire:navigate class="text-info px-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -144,7 +210,13 @@
                                 <td colspan="8" class="text-center py-5">
                                     <i class="fas fa-users text-gray-400" style="font-size: 2rem;"></i>
                                     <h6 class="mt-3 mb-1">Tidak ada data user</h6>
-                                    <p class="text-sm text-muted">Mulai dengan menambah user baru.</p>
+                                    <p class="text-sm text-muted">
+                                        @if($search || $roleFilter || $emailStatusFilter)
+                                            Coba ubah filter pencarian Anda
+                                        @else
+                                            Mulai dengan menambah user baru.
+                                        @endif
+                                    </p>
                                 </td>
                             </tr>
                         @endforelse
@@ -155,7 +227,7 @@
 
         <!-- Pagination -->
         <div class="mt-4">
-            {{ $users->links('livewire::bootstrap') }}
+            {{ $users->links() }}
         </div>
     </div>
 

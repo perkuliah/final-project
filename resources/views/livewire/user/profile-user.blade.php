@@ -1,3 +1,4 @@
+@section('title', 'Profile')
 
 <div>
     <style>
@@ -83,8 +84,8 @@
                                         @if($newFoto)
                                             <div class="mt-2">
                                                 <p class="text-sm text-muted">Preview:</p>
-                                                <img src="{{ $newFoto->temporaryUrl() }}" 
-                                                     class="img-thumbnail" 
+                                                <img src="{{ $newFoto->temporaryUrl() }}"
+                                                     class="img-thumbnail"
                                                      style="max-height: 150px; object-fit: cover;">
                                             </div>
                                         @endif
@@ -95,7 +96,7 @@
                                         @error('password') <small class="text-danger text-xs">{{ $message }}</small> @enderror
                                     </div>
                                     <div class="col-12">
-                                        <button type="submit" 
+                                        <button type="submit"
                                                 class="btn bg-gradient-primary btn-sm"
                                                 wire:loading.attr="disabled">
                                             <span wire:loading.remove>Simpan Perubahan</span>

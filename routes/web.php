@@ -26,7 +26,7 @@ Route::get('/', function () {
 
 
 Route::get('/login', Login::class)->name('login')->middleware('guest');
-Route::get('/logout', Logout::class)->name('logout')->middleware('guest');
+Route::get('/logout', Logout::class)->name('logout');
 
 
 
@@ -37,7 +37,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/laporan', Laporan::class)->name('laporan');
     Route::get('/laporan/create-laporan', CreateLaporan::class)->name('createlaporan');
     Route::get('/laporan/edit-laporan/{id}', EditLaporan::class)->name('editlaporan');
-    Route::get('/logout', Logout::class)->name('logout');
     Route::get('/register', Register::class)->name('register');
     Route::get('/profile', Profile::class)->name('profile');
     Route::get('/admin/tasks', Tasks::class)->name('admin.tasks');

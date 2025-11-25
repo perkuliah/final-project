@@ -1,3 +1,4 @@
+@section('title', 'Profile')
 
 <div>
     <style>

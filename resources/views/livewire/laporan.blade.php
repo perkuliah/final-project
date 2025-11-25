@@ -1,3 +1,4 @@
+@section('title', 'Laporan')
 
 <div x-data="{
     deleteId: null,
@@ -43,7 +44,7 @@
             <div class="card">
                 <div class="card-header pb-0 px-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">Data Laporan Saya</h6>
+                        <h6 class="mb-0">Data Laporan</h6>
                         <div class="w-25">
                             <input
                                 type="text"
@@ -142,54 +143,54 @@
         </div>
     </div>
 
-    <!-- Modal View Laporan -->
-    <div class="modal fade" id="viewLaporanModal" tabindex="-1" aria-labelledby="viewLaporanModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewLaporanModalLabel">Detail Laporan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal View Laporan -->
+<div class="modal fade" id="viewLaporanModal" tabindex="-1" aria-labelledby="viewLaporanModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewLaporanModalLabel">Detail Laporan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" x-show="Object.keys(viewLaporan).length > 0" x-cloak>
+                <div class="mb-3">
+                    <strong>Tanggal:</strong>
+                    <p x-text="viewLaporan?.tanggal ? new Date(viewLaporan.tanggal).toLocaleDateString('id-ID') : '-'"></p>
                 </div>
-                <div class="modal-body" x-show="viewLaporan" x-cloak>
-                    <div class="mb-3">
-                        <strong>Tanggal:</strong>
-                        <p x-text="viewLaporan.tanggal ? new Date(viewLaporan.tanggal).toLocaleDateString('id-ID') : '-'"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Status:</strong>
-                        <span :class="{
-                            'badge badge-sm bg-gradient-danger': viewLaporan.status === 'pending',
-                            'badge badge-sm bg-gradient-info': viewLaporan.status === 'diproses',
-                            'badge badge-sm bg-gradient-success': viewLaporan.status === 'disetujui'
-                        }" x-text="viewLaporan.status ? viewLaporan.status.charAt(0).toUpperCase() + viewLaporan.status.slice(1) : '-'"></span>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Pemasukan:</strong>
-                        <p x-text="viewLaporan.pemasukan ? 'Rp ' + parseFloat(viewLaporan.pemasukan).toLocaleString('id-ID') : '-'"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Pengeluaran:</strong>
-                        <p x-text="viewLaporan.pengeluaran ? 'Rp ' + parseFloat(viewLaporan.pengeluaran).toLocaleString('id-ID') : '-'"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Judul:</strong>
-                        <p x-text="viewLaporan.judul || '-'"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Deskripsi:</strong>
-                        <p x-text="viewLaporan.deskripsi || '-'"></p>
-                    </div>
-                    <div class="mb-3" x-show="viewLaporan.gambar">
-                        <strong>Gambar:</strong><br>
-                        <img :src="viewLaporan.gambar" class="img-fluid rounded mt-2" style="max-height: 300px; object-fit: cover;">
-                    </div>
+                <div class="mb-3">
+                    <strong>Status:</strong>
+                    <span :class="{
+                        'badge badge-sm bg-gradient-danger': viewLaporan?.status === 'pending',
+                        'badge badge-sm bg-gradient-info': viewLaporan?.status === 'diproses',
+                        'badge badge-sm bg-gradient-success': viewLaporan?.status === 'disetujui'
+                    }" x-text="viewLaporan?.status ? (viewLaporan.status.charAt(0).toUpperCase() + viewLaporan.status.slice(1)) : '-'"></span>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Tutup</button>
+                <div class="mb-3">
+                    <strong>Pemasukan:</strong>
+                    <p x-text="viewLaporan?.pemasukan ? 'Rp ' + parseFloat(viewLaporan.pemasukan).toLocaleString('id-ID') : '-'"></p>
                 </div>
+                <div class="mb-3">
+                    <strong>Pengeluaran:</strong>
+                    <p x-text="viewLaporan?.pengeluaran ? 'Rp ' + parseFloat(viewLaporan.pengeluaran).toLocaleString('id-ID') : '-'"></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Judul:</strong>
+                    <p x-text="viewLaporan?.judul || '-'"></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Deskripsi:</strong>
+                    <p x-text="viewLaporan?.deskripsi || '-'"></p>
+                </div>
+                <div class="mb-3" x-show="viewLaporan?.gambar">
+                    <strong>Gambar:</strong><br>
+                    <img :src="viewLaporan?.gambar" class="img-fluid rounded mt-2" style="max-height: 300px; object-fit: cover;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 

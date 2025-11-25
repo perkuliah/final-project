@@ -1,3 +1,5 @@
+@section('title', 'Tugas')
+
 <div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="mb-0">Tugas Saya</h4>

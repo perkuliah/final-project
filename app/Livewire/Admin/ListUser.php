@@ -13,13 +13,22 @@ class ListUser extends Component
     use WithPagination;
 
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 5;
     public $sortField = 'name';
     public $sortAsc = true;
     public $selectedUser = null;
     public $showDeleteModal = false;
+    public $roleFilter = '';
+    public $emailStatusFilter = '';
 
-    protected $queryString = ['search', 'perPage', 'sortField', 'sortAsc'];
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'perPage' => ['except' => 5],
+        'sortField' => ['except' => 'name'],
+        'sortAsc' => ['except' => true],
+        'roleFilter' => ['except' => ''],
+        'emailStatusFilter' => ['except' => ''],
+    ];
 
     public function updatingSearch()
     {
@@ -28,6 +37,24 @@ class ListUser extends Component
 
     public function updatingPerPage()
     {
+        $this->resetPage();
+    }
+
+    public function updatingRoleFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingEmailStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function resetFilters()
+    {
+        $this->search = '';
+        $this->roleFilter = '';
+        $this->emailStatusFilter = '';
         $this->resetPage();
     }
 
@@ -58,27 +85,33 @@ class ListUser extends Component
         }
     }
 
-    public function getUsersProperty()
+    public function render()
     {
-        return User::query()
+        $users = User::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
                       ->orWhere('email', 'like', '%' . $this->search . '%')
                       ->orWhere('username', 'like', '%' . $this->search . '%')
                       ->orWhere('whatsapp', 'like', '%' . $this->search . '%')
-                      ->orWhere('alamat', 'like', '%' . $this->search . '%')
-                      ->orWhere('role', 'like', '%' . $this->search . '%');
+                      ->orWhere('alamat', 'like', '%' . $this->search . '%');
                 });
+            })
+            ->when($this->roleFilter, function ($query) {
+                $query->where('role', $this->roleFilter);
+            })
+            ->when($this->emailStatusFilter, function ($query) {
+                if ($this->emailStatusFilter === 'verified') {
+                    $query->whereNotNull('email_verified_at');
+                } elseif ($this->emailStatusFilter === 'unverified') {
+                    $query->whereNull('email_verified_at');
+                }
             })
             ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
-    }
 
-    public function render()
-{
-    return view('livewire.admin.list-user', [
-        'users' => User::paginate($this->perPage)
-    ]);
-}
+        return view('livewire.admin.list-user', [
+            'users' => $users
+        ]);
+    }
 }
