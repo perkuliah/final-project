@@ -1,61 +1,234 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Manajemen Laporan Keuangan
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web untuk mengelola laporan keuangan dengan sistem multi-role (Admin & User). Aplikasi ini memungkinkan pengguna untuk membuat laporan pemasukan dan pengeluaran, sementara admin dapat memverifikasi dan mengelola laporan tersebut.
 
-## About Laravel
+## Deskripsi Aplikasi
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Sistem Manajemen Laporan Keuangan adalah aplikasi berbasis web yang dirancang untuk memudahkan pencatatan dan pengelolaan transaksi keuangan. Aplikasi ini dilengkapi dengan sistem autentikasi, manajemen tugas, dan fitur pelaporan yang komprehensif dengan dukungan ekspor PDF.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Fitur Admin
+- **Dashboard Admin** - Statistik dan overview laporan keuangan
+- **Manajemen User** - Kelola data pengguna (CRUD)
+- **Verifikasi Laporan** - Review dan verifikasi laporan dari user dengan status (Menunggu, Diproses, Selesai)
+- **Manajemen Tugas** - Assign tugas kepada user dengan lampiran file
+- **Laporan Keuangan** - Lihat semua laporan dengan filter lokasi dan status
+- **Export PDF** - Cetak laporan dalam format PDF
+- **Registrasi User** - Tambah user baru ke sistem
 
-## Learning Laravel
+### Fitur User
+- **Dashboard User** - Ringkasan laporan pribadi
+- **Buat Laporan** - Input laporan pemasukan/pengeluaran dengan:
+  - Judul dan deskripsi
+  - Nominal pemasukan dan pengeluaran
+  - Upload gambar bukti
+  - Pilih lokasi (Salem, Bentar, Bentarsari, Bumiayu, Cilacap)
+  - Tanggal transaksi
+- **Kelola Laporan** - Edit dan hapus laporan pribadi
+- **Manajemen Tugas** - Lihat tugas yang ditugaskan dan submit hasil pekerjaan
+- **Profile Management** - Update data profil dan foto
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Fitur Umum
+- **Autentikasi** - Login/Logout dengan role-based access
+- **Real-time Updates** - Menggunakan Livewire untuk interaksi dinamis
+- **Responsive Design** - Tampilan optimal di berbagai perangkat
+- **Multi-lokasi** - Support untuk beberapa lokasi cabang
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Teknologi yang Digunakan
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Backend
+- **Laravel 12** - PHP Framework
+- **PHP 8.2+** - Programming Language
+- **SQLite** - Database
+- **Laravel Sanctum** - API Authentication
+- **Livewire 3.6** - Full-stack framework untuk Laravel
 
-## Laravel Sponsors
+### Frontend
+- **Tailwind CSS 4.0** - Utility-first CSS Framework
+- **Vite 7** - Frontend Build Tool
+- **Alpine.js** - Lightweight JavaScript Framework (via Livewire)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Libraries & Tools
+- **DomPDF** - PDF Generation
+- **Laravel Pint** - Code Style Fixer
+- **Concurrently** - Run multiple commands simultaneously
 
-### Premium Partners
+## Persyaratan Sistem
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP >= 8.2
+- Composer
+- Node.js & NPM
+- SQLite (atau database lain yang didukung Laravel)
 
-## Contributing
+## Cara Instalasi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Clone Repository
+```bash
+git clone <repository-url>
+cd <project-folder>
+```
 
-## Code of Conduct
+### 2. Install Dependencies
+```bash
+# Install PHP dependencies
+composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Install Node dependencies
+npm install
+```
 
-## Security Vulnerabilities
+### 3. Konfigurasi Environment
+```bash
+# Copy file environment
+copy .env.example .env
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Generate application key
+php artisan key:generate
+```
 
-## License
+### 4. Konfigurasi Database
+Edit file `.env` dan sesuaikan konfigurasi database:
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Atau buat file database SQLite:
+```bash
+type nul > database\database.sqlite
+```
+
+### 5. Migrasi Database
+```bash
+php artisan migrate
+```
+
+### 6. Storage Link
+```bash
+php artisan storage:link
+```
+
+### 7. (Opsional) Seed Data
+Jika tersedia seeder untuk data dummy:
+```bash
+php artisan db:seed
+```
+
+## Cara Menjalankan Project
+
+### Metode 1: Menggunakan Composer Script (Recommended)
+```bash
+composer dev
+```
+Script ini akan menjalankan secara bersamaan:
+- Laravel development server (http://localhost:8000)
+- Queue worker
+- Vite dev server
+
+### Metode 2: Manual (Terminal Terpisah)
+
+**Terminal 1 - Laravel Server:**
+```bash
+php artisan serve
+```
+
+**Terminal 2 - Vite Dev Server:**
+```bash
+npm run dev
+```
+
+**Terminal 3 - Queue Worker (Opsional):**
+```bash
+php artisan queue:listen
+```
+
+### Build untuk Production
+```bash
+# Build assets
+npm run build
+
+# Optimize Laravel
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+## Akses Aplikasi
+
+Setelah menjalankan server, akses aplikasi melalui browser:
+- **URL:** http://localhost:8000
+- **Login:** http://localhost:8000/login
+
+### Default Credentials
+Sesuaikan dengan data seeder atau buat user manual melalui registrasi.
+
+## Struktur Folder Utama
+
+```
+├── app/
+│   ├── Http/          # Controllers & Middleware
+│   ├── Livewire/      # Livewire Components
+│   ├── Models/        # Eloquent Models
+│   └── Services/      # Business Logic Services
+├── database/
+│   ├── migrations/    # Database Migrations
+│   └── seeders/       # Database Seeders
+├── resources/
+│   ├── views/         # Blade Templates
+│   ├── css/           # Stylesheets
+│   └── js/            # JavaScript Files
+├── routes/
+│   └── web.php        # Web Routes
+└── public/            # Public Assets
+```
+
+## Testing
+
+Jalankan test suite:
+```bash
+composer test
+```
+
+Atau:
+```bash
+php artisan test
+```
+
+## Troubleshooting
+
+### Error: Permission Denied
+```bash
+# Windows (Run as Administrator)
+icacls storage /grant Users:F /T
+icacls bootstrap\cache /grant Users:F /T
+```
+
+### Error: Vite Manifest Not Found
+```bash
+npm run build
+```
+
+### Error: Database Locked
+Pastikan tidak ada proses lain yang mengakses database SQLite.
+
+## Kontribusi
+
+Jika ingin berkontribusi pada project ini:
+1. Fork repository
+2. Buat branch fitur baru (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+## Lisensi
+
+Project ini menggunakan lisensi [MIT License](https://opensource.org/licenses/MIT).
+
+## Kontak & Support
+
+Untuk pertanyaan atau dukungan, silakan hubungi tim development atau buat issue di repository ini.
+
+---
+
+
